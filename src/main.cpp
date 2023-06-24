@@ -21,7 +21,8 @@ void loop(){
   
   Serial.println(napon);
 
-  delay(1000);
+
+  delay(1001);
 
 }
 
