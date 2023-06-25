@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 
-const int naponPin = 39;
+const int naponPin = 2;
 Servo motorSpin;
 Servo motorRoll;
 
@@ -19,7 +19,7 @@ void advance(Servo *s, double poz)
     for (int pos = trenuta; pos <= poz; pos += 1)
     {
       s->write(pos); // Move to the current position
-      delay(40);    // Delay for smoother movement
+      delay(10);    // Delay for smoother movement
     }
   }
   else
@@ -27,7 +27,7 @@ void advance(Servo *s, double poz)
       for (int pos = trenuta; pos >= poz; pos -= 1)
       {
         s->write(pos); // Move to the current position
-        delay(40);    // Delay for smoother movement
+        delay(10);    // Delay for smoother movement
       }
     }
 
@@ -36,23 +36,24 @@ void advance(Servo *s, double poz)
 
 double diferencijal(Servo * s, double step) {
   int napon = analogRead(naponPin);
-
+  spin = s->read();
   advance(s, spin + step);
     
 
-  delay(500);
+  delay(2000);
   double rezultat = (analogRead(naponPin) - napon)/step;
   delay(500);
 
   advance(s, spin-step);
 
-  return rezultat;
+  return rezultat*step;
 }
 
 void setup(){
     Serial.begin(115200);
-     motorSpin.attach(4);
-     motorRoll.attach(2);
+     motorSpin.attach(18);
+     motorRoll.attach(19);
+     pinMode(naponPin, INPUT); 
 
 
 
@@ -63,10 +64,16 @@ void setup(){
 
 void loop(){
 
+  Serial.println("pocetak");
+  Serial.println(diferencijal(&motorSpin, 10));
+  delay(2000);
+  Serial.println(diferencijal(&motorSpin, 30));
+  delay(2000);
+  Serial.println(diferencijal(&motorSpin, 50));
+  delay(2000);
+  Serial.println(diferencijal(&motorSpin, 60));
   
-  Serial.println(diferencijal(&motorSpin, 100));
-
-
+  Serial.println("kraj");
 
   delay(8000);
 
