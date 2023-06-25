@@ -46,7 +46,7 @@ double diferencijal(Servo * s, double step) {
 
   advance(s, spin-step);
 
-  return rezultat*step;
+  return rezultat;
 }
 
 void setup(){
@@ -62,20 +62,31 @@ void setup(){
 
 }
 
+void nadiPoziciju(int preciznost){
+
+  int sp = diferencijal(&motorSpin, preciznost);
+  delay(2000);
+  int rol = diferencijal(&motorRoll, preciznost);
+
+  double duzina = sqrt(sp*sp + rol*rol);
+
+  advance(&motorSpin, preciznost * (sp/duzina) );
+  advance(&motorRoll, preciznost * (rol/duzina) );
+
+}
+
 void loop(){
 
   Serial.println("pocetak");
-  Serial.println(diferencijal(&motorSpin, 10));
-  delay(2000);
-  Serial.println(diferencijal(&motorSpin, 30));
-  delay(2000);
-  Serial.println(diferencijal(&motorSpin, 50));
-  delay(2000);
-  Serial.println(diferencijal(&motorSpin, 60));
+
   
+  nadiPoziciju(40);
+  nadiPoziciju(10);
+
+
   Serial.println("kraj");
 
-  delay(8000);
+  delay(10000);
 
 }
 
