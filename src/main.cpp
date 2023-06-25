@@ -5,14 +5,17 @@ const int naponPin = 2;
 Servo motorSpin;
 Servo motorRoll;
 
-double spin = 90;
-double roll = 60;
 
 bool startup = true;
 
-void advance(Servo *s, double poz)
+void advance(Servo *s, int poz)
 {
+  poz = poz - (360 / poz) * 360;
   double trenuta = s->read();
+  Serial.print("trenutna: ");
+  Serial.println(trenuta);
+  Serial.print("zadana: ");
+  Serial.println(poz);
   
   if (trenuta < poz)
   {
@@ -31,20 +34,22 @@ void advance(Servo *s, double poz)
       }
     }
 
+  Serial.print("nakon pomjeranja");
+  Serial.println(s->read());
   
 }
 
 double diferencijal(Servo * s, double step) {
   int napon = analogRead(naponPin);
-  spin = s->read();
-  advance(s, spin + step);
+  int poz = s->read();
+  advance(s, poz + step);
     
 
-  delay(2000);
+  delay(3000);
   double rezultat = (analogRead(naponPin) - napon)/step;
   delay(500);
 
-  advance(s, spin-step);
+  advance(s, poz-step);
 
   return rezultat;
 }
@@ -57,30 +62,32 @@ void setup(){
 
 
 
-    motorSpin.write(spin);
-    motorRoll.write(roll);
+    motorSpin.write(180);
+    motorRoll.write(180);
 
 }
 
 void nadiPoziciju(int preciznost){
 
   int sp = diferencijal(&motorSpin, preciznost);
-  delay(2000);
+  delay(3000);
   int rol = diferencijal(&motorRoll, preciznost);
 
   double duzina = sqrt(sp*sp + rol*rol);
 
-  advance(&motorSpin, preciznost * (sp/duzina) );
-  advance(&motorRoll, preciznost * (rol/duzina) );
+  advance(&motorSpin, motorSpin.read() + preciznost * (sp/duzina) );
+  Serial.println(preciznost * (sp/duzina));
+  advance(&motorRoll, motorRoll.read() + preciznost * (rol/duzina) );
+  Serial.println(preciznost * (rol/duzina));
 
 }
 
 void loop(){
-
   Serial.println("pocetak");
 
   
   nadiPoziciju(40);
+  delay(1000);
   nadiPoziciju(10);
 
 
