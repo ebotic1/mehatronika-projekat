@@ -25,8 +25,6 @@ const int positionTimeout = 240;
 void advance(Servo *s, int poz)
 {
   if(poz > 180 || poz < 0){
-    Serial.print("value not allowed: ");
-    Serial.println(poz);
     poz = (poz > 180) ? 180 : 0;
   }
 
@@ -62,14 +60,6 @@ double diferencijal(Servo * s, double step) {
   delay(4000);
   int novi_napon = analogRead(naponPin);
 
-  
-  if(s == &motorRoll){
-    Serial.print("info: ");
-    Serial.print(napon);
-    Serial.print(" ");
-    Serial.print(novi_napon);
-    Serial.println(" info end");
-  }
 
   delay(500);
 
@@ -129,8 +119,8 @@ void setup(){
 
     server.begin();
 
-    //nadiPoziciju(180);
-    //nadiPoziciju(90);
+    nadiPoziciju(180);
+    nadiPoziciju(90);
 
 }
 
@@ -138,18 +128,15 @@ int cnt_old = 0;
 
 void loop(){
 
- // return;
-
 int cnt = (millis() / 1000) / positionTimeout;
 
 if(cnt > cnt_old){
   cnt_old = cnt;
-  Serial.println("pocetak");
   for(int i = 40; i>0; i=i/2){
     nadiPoziciju(i);
     delay(2000);
   }
-  Serial.println("kraj");
+
 }
 
 
