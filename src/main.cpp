@@ -5,31 +5,32 @@ const int naponPin = 39;
 Servo motorSpin;
 Servo motorRoll;
 
-double spin = 55;
-double roll = 40;
+double spin = 90;
+double roll = 60;
+
+bool startup = true;
 
 void advance(Servo *s, double poz)
 {
-  /*
-  int znak = (s->read() < poz) ? 1 : -1;
-  if (znak == 1)
+  double trenuta = s->read();
+  
+  if (trenuta < poz)
   {
-    for (int pos = s->read(); pos <= poz; pos += 1)
+    for (int pos = trenuta; pos <= poz; pos += 1)
     {
       s->write(pos); // Move to the current position
-      delay(500);    // Delay for smoother movement
+      delay(40);    // Delay for smoother movement
     }
   }
   else
     {
-      for (int pos = s->read(); pos >= poz; pos -= 1)
+      for (int pos = trenuta; pos >= poz; pos -= 1)
       {
         s->write(pos); // Move to the current position
-        delay(500);    // Delay for smoother movement
+        delay(40);    // Delay for smoother movement
       }
     }
-*/
-    s->write(poz);
+
   
 }
 
@@ -39,9 +40,9 @@ double diferencijal(Servo * s, double step) {
   advance(s, spin + step);
     
 
-  delay(1000);
+  delay(500);
   double rezultat = (analogRead(naponPin) - napon)/step;
-  delay(1000);
+  delay(500);
 
   advance(s, spin-step);
 
@@ -53,15 +54,17 @@ void setup(){
      motorSpin.attach(4);
      motorRoll.attach(2);
 
-    advance(&motorSpin, spin);
-    advance(&motorRoll, roll);
+
+
+    motorSpin.write(spin);
+    motorRoll.write(roll);
 
 }
 
 void loop(){
+
   
-  
-  Serial.println(diferencijal(&motorSpin, 10));
+  Serial.println(diferencijal(&motorSpin, 100));
 
 
 
