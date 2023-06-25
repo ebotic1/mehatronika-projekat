@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 
-const int naponPin = 2;
+const int naponPin = 4;
 Servo motorSpin;
 Servo motorRoll;
 
@@ -10,13 +10,10 @@ bool startup = true;
 
 void advance(Servo *s, int poz)
 {
-  poz = poz - (360 / poz) * 360;
+  poz = poz - (poz / 360) * 360;
+  if(poz < 0) poz+=360;
   double trenuta = s->read();
-  Serial.print("trenutna: ");
-  Serial.println(trenuta);
-  Serial.print("zadana: ");
-  Serial.println(poz);
-  
+
   if (trenuta < poz)
   {
     for (int pos = trenuta; pos <= poz; pos += 1)
@@ -34,8 +31,6 @@ void advance(Servo *s, int poz)
       }
     }
 
-  Serial.print("nakon pomjeranja");
-  Serial.println(s->read());
   
 }
 
@@ -44,14 +39,51 @@ double diferencijal(Servo * s, double step) {
   int poz = s->read();
   advance(s, poz + step);
     
+  delay(5000);
+  int novi_napon = analogRead(naponPin);
 
-  delay(3000);
-  double rezultat = (analogRead(naponPin) - napon)/step;
+  if(novi_napon == napon)
+  Serial.println("mater ti jebem");
+
+  
+  if(s == &motorRoll){
+    Serial.print("info: ");
+    Serial.print(napon);
+    Serial.print(" ");
+    Serial.print(novi_napon);
+    Serial.println(" info end");
+    novi_napon = 40;
+  }
+
   delay(500);
 
   advance(s, poz-step);
 
-  return rezultat;
+
+  return (novi_napon - napon);
+}
+
+void nadiPoziciju(int preciznost){
+
+  int sp = diferencijal(&motorSpin, preciznost);
+  delay(3000);
+  int rol = diferencijal(&motorRoll, preciznost);
+
+  double duzina = sqrt(sp*sp + rol*rol);
+
+  
+
+  if(duzina == 0)
+    return;
+  if(sp > 5)
+  advance(&motorSpin, motorSpin.read() + preciznost * (sp/duzina) );
+
+  if(rol > 5)
+  advance(&motorRoll, motorRoll.read() + preciznost * (rol/duzina) );
+
+
+  Serial.println(preciznost * (rol/duzina));
+
 }
 
 void setup(){
@@ -67,33 +99,25 @@ void setup(){
 
 }
 
-void nadiPoziciju(int preciznost){
-
-  int sp = diferencijal(&motorSpin, preciznost);
-  delay(3000);
-  int rol = diferencijal(&motorRoll, preciznost);
-
-  double duzina = sqrt(sp*sp + rol*rol);
-
-  advance(&motorSpin, motorSpin.read() + preciznost * (sp/duzina) );
-  Serial.println(preciznost * (sp/duzina));
-  advance(&motorRoll, motorRoll.read() + preciznost * (rol/duzina) );
-  Serial.println(preciznost * (rol/duzina));
-
-}
 
 void loop(){
+
+//Serial.println(analogRead(naponPin));
+//advance(&motorRoll, -10);
+//delay(900);
+  //return;
+
   Serial.println("pocetak");
 
-  
-  nadiPoziciju(40);
-  delay(1000);
-  nadiPoziciju(10);
+  for(int i = 170; i>0; i=i/2){
+    nadiPoziciju(i);
+    delay(2000);
+}
 
 
   Serial.println("kraj");
 
-  delay(10000);
+  delay(100000);
 
 }
 
