@@ -1,7 +1,11 @@
 #include <vector>
 #include <string>
 
+std::string s;
+
 const char *dajStranicu(std::vector<int> &vrijeme, std::vector<int> &napon){
+    s = "";
+    
     const char *prvi_dio = "<!DOCTYPE html>\n"
                         "<html>\n"
                         "<head>\n"
@@ -13,7 +17,7 @@ const char *dajStranicu(std::vector<int> &vrijeme, std::vector<int> &napon){
                         "<script>\n"
                         "var data = [];\n";
 
-    std::string s;
+    
 
     s+=prvi_dio;
 
