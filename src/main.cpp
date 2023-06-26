@@ -108,8 +108,8 @@ void setup()
 
   server.begin();
 
-  //nadiPoziciju(180);
-  //nadiPoziciju(90);
+  nadiPoziciju(180);
+  nadiPoziciju(90);
 }
 
 int cnt_old = 0;
