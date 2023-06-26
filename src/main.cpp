@@ -82,7 +82,6 @@ void nadiPoziciju(int preciznost)
 
   advance(&motorRoll, motorRoll.read() + preciznost * (rol / duzina));
 
-  Serial.println(preciznost * (rol / duzina));
 }
 
 void setup()
@@ -109,8 +108,8 @@ void setup()
 
   server.begin();
 
-  nadiPoziciju(180);
-  nadiPoziciju(90);
+  //nadiPoziciju(180);
+  //nadiPoziciju(90);
 }
 
 int cnt_old = 0;
@@ -132,6 +131,8 @@ void loop()
 
   vrijeme.push_back(millis() / 1000);
   napon.push_back(analogRead(naponPin));
+
+  Serial.println(napon.size());
 
   delay(20000);
 }
